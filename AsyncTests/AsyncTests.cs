@@ -1,4 +1,4 @@
-﻿using System.Threading;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -22,10 +22,16 @@ namespace AsyncTests
             return Task.Run(() => Fibonacci(n));
         }
 
-        public static string LongOperation(string value, int waitTime = 1)
+        public static string GetString(string value)
         {
-            Thread.Sleep(waitTime * 1000);
             return value.ToUpper();
+        }
+
+        public static async Task<string> GetStringAsync(string value, int waitTime = 0)
+        {
+            await Task.Delay(waitTime);
+            Console.WriteLine(value);
+            return GetString(value);
         }
 
 
@@ -47,6 +53,60 @@ namespace AsyncTests
         public void TestMethod3()
         {
             Assert.AreEqual(Fibonacci(20), 6765);
+        }
+
+        [TestMethod]
+        public void TestMethod4() // broken without await
+        {
+            var task1 = GetStringAsync("time out.", 1000);
+            var task2 = GetStringAsync("Hello", 2000);
+            var task3 = GetStringAsync("World", 3000);
+            var res = Task.WhenAny(task3, task2, task1);
+            Assert.IsFalse(task3.IsCompleted);
+            Assert.IsFalse(task1.IsCompleted);
+            Assert.IsFalse(task2.IsCompleted);
+        }
+
+        [TestMethod]
+        public async Task TestMethod5() //use WhenAny for timeouts
+        {
+            var task1 = GetStringAsync("Hello", 2000);
+            var task2 = GetStringAsync("World", 3000);
+            var task3 = GetStringAsync("time out.");
+            var res = await Task.WhenAny(task3, task2, task1);
+            Assert.AreEqual(res.Result, "TIME OUT.");
+            Assert.IsTrue(task3.IsCompleted);
+            Assert.IsFalse(task1.IsCompleted);
+            Assert.IsFalse(task2.IsCompleted);
+        }
+
+        [TestMethod]
+        public async Task TestMethod6() //use WhenAll parallel async
+        {
+            var task1 = GetStringAsync("Hello", 1000);
+            var task2 = GetStringAsync("World", 2000);
+
+            var res = await Task.WhenAll(task2, task1); //ordered by position
+
+            CollectionAssert.AreEqual(new[] {"WORLD", "HELLO"}, res);
+
+            Assert.AreEqual("HELLO WORLD", $"{task1.Result} {task2.Result}");
+        }
+
+        [TestMethod]
+        public async Task TestMethod7() //serial async
+        {
+            var s1 = await GetStringAsync("one", 300);
+            var s2 = await GetStringAsync(s1 + " two", 1000);
+            var s3 = await GetStringAsync(s2 + " three", 200);
+            Assert.AreEqual("ONE TWO THREE", s3);
+        }
+
+        [TestMethod]
+        public async Task TestMethod8()
+        {
+            Assert.AreEqual("ONE TWO THREE",
+                $"{await GetStringAsync("One")} {await GetStringAsync("Two")} {await GetStringAsync("Three")}");
         }
 
     }
