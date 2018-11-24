@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -107,6 +108,13 @@ namespace AsyncTests
         {
             Assert.AreEqual("ONE TWO THREE",
                 $"{await GetStringAsync("One")} {await GetStringAsync("Two")} {await GetStringAsync("Three")}");
+        }
+
+        [TestMethod]
+        public async Task TestMethod9()
+        {
+            var cancelSource = new CancellationTokenSource(5000);	// This tells it to cancel in 5 seconds
+            
         }
 
     }
