@@ -45,9 +45,52 @@ namespace AsyncTests
         }
 
         [TestMethod]
+        public async Task TestMethod11()
+        {
+            var captured = 5;
+
+            void MultiplyByTwo()
+            {
+                captured = captured * 2;
+            }
+            
+            async Task MultiplyByTwoAsync() //note: not returning anything
+            {
+                await Task.Run(() => captured = captured * 2);
+            }
+
+            Task MultiplyByTwo2Async() //note: have to return task
+            {
+                return Task.Run(() => captured = captured * 2);
+            }
+
+            MultiplyByTwo();
+            Assert.AreEqual(10, captured);
+
+            await MultiplyByTwoAsync();
+            Assert.AreEqual(20, captured);
+
+            await MultiplyByTwo2Async();
+            Assert.AreEqual(40, captured);
+        }
+
+        [TestMethod]
         public async Task TestMethod2()
         {
             Assert.AreEqual(await FibonacciAsync(18), 2584);
+        }
+
+        [TestMethod]
+        public async Task TestMethod21()
+        {
+            long total = 0;
+
+            for (var i = 10; i < 20; i++)
+            {
+                total += await FibonacciAsync(i);
+            }
+
+            Assert.AreEqual(10857, total);
         }
 
         [TestMethod]
@@ -113,9 +156,7 @@ namespace AsyncTests
         [TestMethod]
         public async Task TestMethod9()
         {
-            var cancelSource = new CancellationTokenSource(5000);	// This tells it to cancel in 5 seconds
-            
+            var cancelSource = new CancellationTokenSource(5000); // This tells it to cancel in 5 seconds
         }
-
     }
 }
