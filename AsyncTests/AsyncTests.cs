@@ -9,8 +9,6 @@ namespace AsyncTests
     [TestClass]
     public class AsyncTests
     {
-        public static int Id = 1000;
-
         // Recursively calculates Fibonacci numbers
         public static long Fibonacci(long n)
         {
@@ -22,11 +20,6 @@ namespace AsyncTests
         public Task<long> FibonacciAsync(long n)
         {
             return Task.Run(() => Fibonacci(n));
-        }
-
-        public Task<long> FibonacciAsync(long n, CancellationToken cancellationToken)
-        {
-            return Task.Run(() => Fibonacci(n), cancellationToken);
         }
 
         public static string GetString(string value)
@@ -194,24 +187,36 @@ namespace AsyncTests
             }
             catch (TaskCanceledException e)
             {
-                CollectionAssert.AreEqual(new []{0,1,2,3,4}, numbers);
+                CollectionAssert.AreEqual(new[] {0, 1, 2, 3, 4}, numbers);
             }
         }
 
         [TestMethod]
         public async Task TestMethod_10()
         {
- 
-            var cancelSource = new CancellationTokenSource(1000); // This tells it to cancel in 5 seconds
-            var result = 0l;
-            try
+            var cancelSource = new CancellationTokenSource();
+            var token = cancelSource.Token;
+            var numIterations = 0;
+           
+            var task1 = Task.Run( () =>
             {
-               result = await FibonacciAsync(100, cancelSource.Token);
-            }
-            catch (TaskCanceledException e)
-            {
-                
-            }
+                for (var i = 0; i < 100000 && !token.IsCancellationRequested; i++)
+                {
+                    numIterations++;
+
+                    if (numIterations >= 10)
+                    {
+                        cancelSource.Cancel();
+                       
+                    }
+                }
+            }, token);
+
+            await task1;
+
+            Assert.AreEqual(10, numIterations);
         }
+
+        
     }
 }
