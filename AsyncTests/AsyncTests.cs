@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +22,11 @@ namespace AsyncTests
         public Task<long> FibonacciAsync(long n)
         {
             return Task.Run(() => Fibonacci(n));
+        }
+
+        public Task<long> FibonacciAsync(long n, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => Fibonacci(n), cancellationToken);
         }
 
         public static string GetString(string value)
@@ -53,7 +59,7 @@ namespace AsyncTests
             {
                 captured = captured * 2;
             }
-            
+
             async Task MultiplyByTwoAsync() //note: not returning anything
             {
                 await Task.Run(() => captured = captured * 2);
@@ -88,6 +94,19 @@ namespace AsyncTests
             for (var i = 10; i < 20; i++)
             {
                 total += await FibonacciAsync(i);
+            }
+
+            Assert.AreEqual(10857, total);
+        }
+
+        [TestMethod]
+        public void TestMethod22()
+        {
+            long total = 0;
+
+            for (var i = 10; i < 20; i++)
+            {
+                total += Fibonacci(i);
             }
 
             Assert.AreEqual(10857, total);
@@ -156,7 +175,43 @@ namespace AsyncTests
         [TestMethod]
         public async Task TestMethod9()
         {
+            var numbers = new List<int>();
+
+            async Task DoWork(CancellationToken cancellationToken)
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    numbers.Add(i);
+                    await Task.Delay(1000, cancellationToken);
+                }
+            }
+
             var cancelSource = new CancellationTokenSource(5000); // This tells it to cancel in 5 seconds
+
+            try
+            {
+                await DoWork(cancelSource.Token);
+            }
+            catch (TaskCanceledException e)
+            {
+                CollectionAssert.AreEqual(new []{0,1,2,3,4}, numbers);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestMethod_10()
+        {
+ 
+            var cancelSource = new CancellationTokenSource(1000); // This tells it to cancel in 5 seconds
+            var result = 0l;
+            try
+            {
+               result = await FibonacciAsync(100, cancelSource.Token);
+            }
+            catch (TaskCanceledException e)
+            {
+                
+            }
         }
     }
 }
