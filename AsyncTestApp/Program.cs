@@ -7,8 +7,33 @@ namespace AsyncTestApp
     {
         private static void Main(string[] args)
         {
-            DownloadRec(new[] {"www.google.com", "www.facebook.com"});
+           var urls = new[]
+           {
+               "1 www.google.com",
+               "2 www.facebook.com",
+               "3 www.amazon.com",
+               "4 www.stackoverflow.com"
+           };
+            Download(urls);
+            //DownloadRec(urls);
+            //DownloadAsync(urls);
             Task.Delay(500).Wait();
+        }
+
+        private static void Download(string[] urls)
+        {
+            foreach (var url in urls)
+            {
+                DownloadAsync(url);
+            }
+        }
+
+        private static async void DownloadAsync(string[] urls)
+        {
+            foreach (var url in urls)
+            {
+               await DownloadAsync(url);
+            }
         }
 
         private static void DownloadRec(string[] urls)
@@ -28,8 +53,11 @@ namespace AsyncTestApp
             TryNextUrl(0);
         }
 
-        private static Task DownloadAsync(string url, Action onSuccess)
+        private static Task DownloadAsync(string url, Action onSuccess = null)
         {
+            var rnd = new Random(DateTime.Now.Millisecond);
+            Task.Delay(rnd.Next(100, 500));
+
             return Task
                 .Run(() =>
                 {
@@ -39,8 +67,10 @@ namespace AsyncTestApp
                 .ContinueWith((t)=>
                 {
                     Console.WriteLine(t.Result);
-                    onSuccess();
+                    onSuccess?.Invoke();
                 });
         }
+
+
     }
 }
