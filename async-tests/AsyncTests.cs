@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace AsyncTests
+namespace async_tests
 {
     public class AsyncTests
     {
