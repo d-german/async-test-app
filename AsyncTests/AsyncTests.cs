@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -8,38 +9,51 @@ namespace AsyncTests
 {
     public class AsyncTests
     {
+        private Stopwatch _stopWatch;
+
+        [SetUp]
+        public void Init()
+        {
+            _stopWatch = new Stopwatch();
+            _stopWatch.Start();
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            _stopWatch.Stop();
+            Console.WriteLine(_stopWatch.ElapsedMilliseconds);
+        }
+
         // Recursively calculates Fibonacci numbers
-        public static long Fibonacci(long n)
+        private static long Fibonacci(long n)
         {
             if (n == 0 || n == 1) return n;
 
             return Fibonacci(n - 1) + Fibonacci(n - 2);
         }
 
-        public Task<long> FibonacciAsync(long n)
+        private static Task<long> FibonacciAsync(long n)
         {
-            return Task.Run(() => Fibonacci(n));
+            return Task.FromResult(Fibonacci(n));
         }
 
-        public static string GetString(string value)
+        private static string GetString(string value)
         {
             return value.ToUpper();
         }
 
-        public static async Task<string> GetStringAsync(string value, int waitTime = 0)
+        private static async Task<string> GetStringAsync(string value, int waitTime = 0)
         {
             await Task.Delay(waitTime);
             Console.WriteLine(value);
             return GetString(value);
         }
 
-
         [Test]
         public async Task TestMethod1()
         {
-            long answer = 0;
-            await Task.Run(() => answer = Fibonacci(20));
-            Assert.AreEqual(answer, 6765);
+            Assert.AreEqual(832040, await Task.FromResult(Fibonacci(30)));
         }
 
         [Test]
@@ -49,17 +63,18 @@ namespace AsyncTests
 
             void MultiplyByTwo()
             {
-                captured = captured * 2;
+                captured *= 2;
             }
 
             async Task MultiplyByTwoAsync() //note: not returning anything
             {
-                await Task.Run(() => captured = captured * 2);
+                // ReSharper disable once AccessToModifiedClosure
+                await Task.FromResult(captured *= 2);
             }
 
             Task MultiplyByTwo2Async() //note: have to return task
             {
-                return Task.Run(() => captured = captured * 2);
+                return Task.FromResult(captured *= 2);
             }
 
             MultiplyByTwo();
@@ -98,7 +113,7 @@ namespace AsyncTests
 
             for (var i = 10; i < 20; i++)
             {
-                total += Fibonacci(i);
+                total += Fibonacci(i); //Not this could lockup the current thread (UI)
             }
 
             Assert.AreEqual(10857, total);
@@ -196,8 +211,8 @@ namespace AsyncTests
             var cancelSource = new CancellationTokenSource();
             var token = cancelSource.Token;
             var numIterations = 0;
-           
-            var task1 = Task.Run( () =>
+
+            var task1 = Task.Run(() =>
             {
                 for (var i = 0; i < 100000 && !token.IsCancellationRequested; i++)
                 {
@@ -206,7 +221,6 @@ namespace AsyncTests
                     if (numIterations >= 10)
                     {
                         cancelSource.Cancel();
-                       
                     }
                 }
             }, token);
@@ -215,7 +229,5 @@ namespace AsyncTests
 
             Assert.AreEqual(10, numIterations);
         }
-
-        
     }
 }
