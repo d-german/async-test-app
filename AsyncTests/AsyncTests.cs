@@ -131,7 +131,7 @@ namespace AsyncTests
             var task1 = GetStringAsync("time out.", 1000);
             var task2 = GetStringAsync("Hello", 2000);
             var task3 = GetStringAsync("World", 3000);
-            var res = Task.WhenAny(task3, task2, task1);
+            _ = Task.WhenAny(task3, task2, task1);
             Assert.IsFalse(task3.IsCompleted);
             Assert.IsFalse(task1.IsCompleted);
             Assert.IsFalse(task2.IsCompleted);
@@ -180,7 +180,7 @@ namespace AsyncTests
         }
 
         [Test]
-        public async Task TestMethod9()
+        public async Task TestMethod9() // Canceling tasks
         {
             var numbers = new List<int>();
 
@@ -212,7 +212,7 @@ namespace AsyncTests
             var token = cancelSource.Token;
             var numIterations = 0;
 
-            var task1 = Task.Run(() =>
+            var task = Task.Run(() =>
             {
                 for (var i = 0; i < 100000 && !token.IsCancellationRequested; i++)
                 {
@@ -225,7 +225,7 @@ namespace AsyncTests
                 }
             }, token);
 
-            await task1;
+            await task;
 
             Assert.AreEqual(10, numIterations);
         }
