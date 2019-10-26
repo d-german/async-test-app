@@ -1,22 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AsyncTestApp
+namespace AsyncDemo
 {
-    internal class Program
+    internal static class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
-           var urls = new[]
-           {
-               "1 www.google.com",
-               "2 www.facebook.com",
-               "3 www.amazon.com",
-               "4 www.stackoverflow.com"
-           };
+            var urls = new[]
+            {
+                "1 www.google.com",
+                "2 www.facebook.com",
+                "3 www.amazon.com",
+                "4 www.stackoverflow.com"
+            };
             Download(urls);
             //DownloadRec(urls);
             //DownloadAsync(urls);
+            
+            
             Task.Delay(500).Wait();
         }
 
@@ -32,7 +35,7 @@ namespace AsyncTestApp
         {
             foreach (var url in urls)
             {
-               await DownloadAsync(url);
+                await DownloadAsync(url);
             }
         }
 
@@ -70,7 +73,5 @@ namespace AsyncTestApp
                     onSuccess?.Invoke();
                 });
         }
-
-
     }
 }

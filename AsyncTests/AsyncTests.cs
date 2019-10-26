@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace AsyncTests
 {
-    [TestClass]
     public class AsyncTests
     {
         // Recursively calculates Fibonacci numbers
@@ -35,7 +34,7 @@ namespace AsyncTests
         }
 
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod1()
         {
             long answer = 0;
@@ -43,7 +42,7 @@ namespace AsyncTests
             Assert.AreEqual(answer, 6765);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod11()
         {
             var captured = 5;
@@ -73,13 +72,13 @@ namespace AsyncTests
             Assert.AreEqual(40, captured);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod2()
         {
             Assert.AreEqual(await FibonacciAsync(18), 2584);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod21()
         {
             long total = 0;
@@ -92,7 +91,7 @@ namespace AsyncTests
             Assert.AreEqual(10857, total);
         }
 
-        [TestMethod]
+        [Test]
         public void TestMethod22()
         {
             long total = 0;
@@ -105,13 +104,13 @@ namespace AsyncTests
             Assert.AreEqual(10857, total);
         }
 
-        [TestMethod]
+        [Test]
         public void TestMethod3()
         {
             Assert.AreEqual(Fibonacci(20), 6765);
         }
 
-        [TestMethod]
+        [Test]
         public void TestMethod4() // broken without await
         {
             var task1 = GetStringAsync("time out.", 1000);
@@ -123,7 +122,7 @@ namespace AsyncTests
             Assert.IsFalse(task2.IsCompleted);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod5() //use WhenAny for timeouts
         {
             var task1 = GetStringAsync("Hello", 2000);
@@ -136,7 +135,7 @@ namespace AsyncTests
             Assert.IsFalse(task2.IsCompleted);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod6() //use WhenAll parallel async
         {
             var task1 = GetStringAsync("Hello", 1000);
@@ -149,7 +148,7 @@ namespace AsyncTests
             Assert.AreEqual("HELLO WORLD", $"{task1.Result} {task2.Result}");
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod7() //serial async
         {
             var s1 = await GetStringAsync("one", 300);
@@ -158,14 +157,14 @@ namespace AsyncTests
             Assert.AreEqual("ONE TWO THREE", s3);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod8()
         {
             Assert.AreEqual("ONE TWO THREE",
                 $"{await GetStringAsync("One")} {await GetStringAsync("Two")} {await GetStringAsync("Three")}");
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod9()
         {
             var numbers = new List<int>();
@@ -191,7 +190,7 @@ namespace AsyncTests
             }
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestMethod_10()
         {
             var cancelSource = new CancellationTokenSource();
