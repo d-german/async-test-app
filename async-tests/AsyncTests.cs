@@ -35,7 +35,7 @@ namespace async_tests
 
         private static Task<long> FibonacciAsync(long n)
         {
-            return Task.FromResult(Fibonacci(n));
+            return Task.Run(() => Fibonacci(n));
         }
 
         private static string GetString(string value)
@@ -53,7 +53,7 @@ namespace async_tests
         [Test]
         public async Task TestMethod1()
         {
-            Assert.AreEqual(832040, await Task.FromResult(Fibonacci(30)));
+            Assert.AreEqual(832040, await Task.Run(() => Fibonacci(30)));
         }
 
         [Test]
@@ -68,13 +68,12 @@ namespace async_tests
 
             async Task MultiplyByTwoAsync() //note: not returning anything
             {
-                // ReSharper disable once AccessToModifiedClosure
-                await Task.FromResult(captured *= 2);
+                await Task.Run(() => captured *= 2);
             }
 
             Task MultiplyByTwo2Async() //note: have to return task
             {
-                return Task.FromResult(captured *= 2);
+                return Task.Run(() => captured *= 2);
             }
 
             MultiplyByTwo();
