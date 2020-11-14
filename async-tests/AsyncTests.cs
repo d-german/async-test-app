@@ -112,7 +112,7 @@ namespace async_tests
 
             for (var i = 10; i < 20; i++)
             {
-                total += Fibonacci(i); //Not this could lockup the current thread (UI)
+                total += Fibonacci(i); //Note this could lockup the current thread (UI)
             }
 
             Assert.AreEqual(10857, total);
