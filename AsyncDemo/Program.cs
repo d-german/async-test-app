@@ -23,7 +23,7 @@ namespace AsyncDemo
             Task.Delay(500).Wait();
         }
 
-        private static void Download(string[] urls)
+        private static void Download(IEnumerable<string> urls)
         {
             foreach (var url in urls)
             {
@@ -31,7 +31,7 @@ namespace AsyncDemo
             }
         }
 
-        private static async void DownloadAsync(string[] urls)
+        private static async void DownloadAsync(IEnumerable<string> urls)
         {
             foreach (var url in urls)
             {
@@ -39,9 +39,9 @@ namespace AsyncDemo
             }
         }
 
-        private static void DownloadRec(string[] urls)
+        private static void DownloadRec(IReadOnlyList<string> urls)
         {
-            var n = urls.Length;
+            var n = urls.Count;
 
             void TryNextUrl(int i)
             {
