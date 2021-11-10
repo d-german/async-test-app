@@ -28,7 +28,7 @@ namespace async_tests
         // Recursively calculates Fibonacci numbers
         private static long Fibonacci(long n)
         {
-            if (n == 0 || n == 1) return n;
+            if (n is 0 or 1) return n;
 
             return Fibonacci(n - 1) + Fibonacci(n - 2);
         }
@@ -89,7 +89,9 @@ namespace async_tests
         [Test]
         public async Task TestMethod2()
         {
+            // code
             Assert.AreEqual(await FibonacciAsync(18), 2584);
+            // code
         }
 
         [Test]
@@ -198,7 +200,7 @@ namespace async_tests
             {
                 await DoWork(cancelSource.Token);
             }
-            catch (TaskCanceledException e)
+            catch (TaskCanceledException)
             {
                 CollectionAssert.AreEqual(new[] {0, 1, 2, 3, 4}, numbers);
             }
