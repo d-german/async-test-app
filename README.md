@@ -16,3 +16,6 @@ The repo includes `.devcontainer/devcontainer.json`, matching the preferred ".NE
 3. The container automatically runs `dotnet restore AsyncTestApp.sln` (its `postCreateCommand`) and installs the requested extensions.
 
 Once the container is ready, follow the same local development commands inside the container shell.
+
+## Continuous Integration
+Every push or pull request triggers `.github/workflows/dotnet-vulnerability-scan.yml`, which installs .NET 8 and runs the repository-wide PowerShell vulnerability scan against all non-test projects. Fix any reported vulnerabilities before merging.
