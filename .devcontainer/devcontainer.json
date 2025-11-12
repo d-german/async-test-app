@@ -1,0 +1,28 @@
+{
+  "name": ".NET High-Performance Environment",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "septag.visual-assist-dark",
+        "jeff-hykin.better-c-sharp-syntax",
+        "icsharpcode.ilspy-vscode",
+        "patcx.vscode-nuget-gallery",
+        "ryanluker.vscode-coverage-gutters",
+        "humao.rest-client"
+      ]
+    }
+  },
+  "forwardPorts": [],
+  "postCreateCommand": "dotnet restore AsyncTestApp.sln",
+  "remoteUser": "vscode"
+}
